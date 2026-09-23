@@ -1,0 +1,134 @@
+---
+title: "Experimental Design for Automatic Egg Incubators Using a 2^2 factorial Design
+  and RCBD."
+author: "STAT.BONVENTURE.M.MIRUKA"
+date: "`r Sys.Date()`"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## OBJECTIVE:
+
+To determine whether Temperature, Humidity or their interaction is the primary 
+factor driving variations in egg hatchability rate (Y) and quantify
+individual-level incubator variability.
+
+## Experimental design:
+
+We utilize a 2^2 full Factorial Design in a Randomized Complete Block Design.
+
+Factor A : Temperature(T)
+           Low(To): standard low (36.5℃)
+           High(T1): standard optimal(37.8℃)
+           
+Factor B : Relative Humidity(H)
+           Low(Ho): standard low(45% RH)
+           High(H1): standard optimal(55% RH)
+           
+Blocks : Incubator models - M1, M2, M3, M4
+
+Experimental units: Fertilized eggs.
+
+Replications : r=3runs per model treatment combination.
+
+
+
+## Statistical analysis framework
+
+Model : Two-way ANOVA with blocking
+Model equation : Yijk= μ + αi + βj + (αβ)ij + γk + εijk, where
+                            
+                            μ : overall mean hatchability rate
+                            αi: main effect of temp level i
+                            βj: main effect of humidity level j
+                            (αβ)ij: interaction effect
+                            γk: blocking effect of model k
+                            εijk: random error ~N(0,σ^2)
+                            
+
+## Dataset generation
+
+```{r}
+set.seed(42)
+incubator_data= data.frame(incubator_model= factor(rep(c("M1","M2","M3","M4"),
+                                                       each =12)),
+                           temp_level=
+                             factor(rep(rep(c("low","high"),each=6),4),levels=c("low","high")),
+                           humidity_level= factor(rep(rep(c("low","high"), each=3),8),levels=c("low","high")),
+                           hatchability_rate= c(62.4,60.8,63.1,68.5,67.2,69.0,74.2,73.0,75.1,88.4,89.1,87.6,58.2,59.0,57.5,64.1,63.5, 65.0,70.5,71.2,69.8,83.0,84.2,82.5,51.0,49.5,53.2,56.8,58.0,55.5,64.0,62.5,65.1,72.4,74.0,71.8,64.5,63.0,65.2,71.0,70.2,72.1,77.8,76.5,78.2,91.2,92.5,90.8)
+                           )
+head(incubator_data)
+```
+
+## ANOVA 
+
+
+### libraries
+
+```{r}
+library(stats)
+```
+
+### Step 1 :Two_way anova with blocking (RCBD).
+
+```{r}
+anova_model=aov(hatchability_rate~ temp_level * humidity_level + incubator_model,data=incubator_data)
+
+cat("=== TWO_WAY ANOVA TABLE===\n")
+summary_anova= summary(anova_model)
+print(summary_anova)
+```
+NOTE: by the view of the Anova table p values of extremely less than 0.05 indicate that there is significant effect of the various factors towards hatchability rates.
+
+
+### Step 2: Calculating effect size (eta-squared) to identify primary factor.
+
+
+```{r}
+ss= summary_anova[[1]]["Sum Sq"]
+eta_squared= ss/sum(ss)
+rownames(eta_squared)=trimws(rownames(ss))
+colnames(eta_squared)="Eta_Squared"
+
+cat("\n===EFFECT SIZE (ETA-SQUARED/ PROPORTION OF VARIANCE)===\n")
+print(round(eta_squared,4))
+```
+NOTE: -Temperature levels account for the vast majority of total variance 
+       confirming it as the primary factor.
+      -Humidity effect is suppressed by temperature as it account for minimal 
+       variance on hatchability rates.
+       
+
+### Step 3: Post-hoc analysis for individual incubator models(Tukey HSD).
+
+
+```{r}
+tukey_res= TukeyHSD(anova_model,"incubator_model", conf.level= 0.95)
+cat("\n=== POST-HOC TUKEY HSD (Incubator model differences)===\n" )
+print(tukey_res)
+```
+
+
+NOTE: Incubator model 1 and 4 show a significant difference in hatchability rates from        the rest of the models(2&3).
+      
+ 
+      
+## Plot Diagnostics.
+
+```{r}
+# Anova Residual plots
+par(mfrow=c(2,2))
+plot(anova_model)
+par(mfrow=c(1,1))
+
+```
+```{r}
+# Box-plot of hatchability by incubator model
+boxplot(hatchability_rate~ incubator_model, data= incubator_data,main= "Hatchability Distribution across Incubator Models",xlab="Incubator Model",ylab="Harchability Rate(%)")
+```
+
+
+
