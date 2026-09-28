@@ -1,0 +1,210 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Experimental Design for Automatic Egg Incubators Using a 2\^{}2 factorial Design and RCBD.},
+  pdfauthor={STAT.BONVENTURE.M.MIRUKA},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Experimental Design for Automatic Egg Incubators Using a 2\^{}2
+factorial Design and RCBD.}
+\author{STAT.BONVENTURE.M.MIRUKA}
+\date{2026-09-23}
+
+\begin{document}
+\maketitle
+
+\begin{quote}
+OBJECTIVE: To determine whether Temperature, Humidity or their
+interaction is the primary factor driving variations in egg hatchability
+rate (Y) and quantify individual-level incubator variability.
+\end{quote}
+
+\begin{quote}
+Experimental design:
+\end{quote}
+
+We utilize a 2\^{}2 full Factorial Design in a Randomized Complete Block
+Design.
+
+Factor A : Temperature(T) Low(To): standard low (36.5℃) High(T1):
+standard optimal(37.8℃)
+
+Factor B : Relative Humidity(H) Low(Ho): standard low(45\% RH) High(H1):
+standard optimal(55\% RH)
+
+Blocks : Incubator models - M1, M2, M3, M4
+
+Experimental units: Fertilized eggs.
+
+Replications : r=3runs per model treatment combination.
+
+\begin{quote}
+Statistical analysis framework
+\end{quote}
+
+Model : Two-way ANOVA with blocking Model equation : Yijk= μ + αi + βj +
+(αβ)ij + γk + εijk, where
+
+\begin{verbatim}
+                        μ : overall mean hatchability rate
+                        αi: main effect of temp level i
+                        βj: main effect of humidity level j
+                        (αβ)ij: interaction effect
+                        γk: blocking effect of model k
+                        εijk: random error ~N(0,σ^2)
+                        
+\end{verbatim}
+
+\begin{quote}
+Dataset generation
+\end{quote}
+
+\begin{verbatim}
+##   incubator_model temp_level humidity_level hatchability_rate
+## 1              M1        low            low              62.4
+## 2              M1        low            low              60.8
+## 3              M1        low            low              63.1
+## 4              M1        low           high              68.5
+## 5              M1        low           high              67.2
+## 6              M1        low           high              69.0
+\end{verbatim}
+
+\#\#ANOVA
+
+\#\#\#libraries
+
+\#\#\#Step 1 :Two\_way anova with blocking (RCBD).
+
+\begin{verbatim}
+## === TWO_WAY ANOVA TABLE===
+\end{verbatim}
+
+\begin{verbatim}
+##                           Df Sum Sq Mean Sq F value   Pr(>F)    
+## temp_level                 1 2962.6  2962.6 1605.77  < 2e-16 ***
+## humidity_level             1 1037.0  1037.0  562.04  < 2e-16 ***
+## incubator_model            3 1517.0   505.7  274.08  < 2e-16 ***
+## temp_level:humidity_level  1  120.7   120.7   65.39 5.04e-10 ***
+## Residuals                 41   75.6     1.8                     
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+NOTE: by the view of the Anova table p values of extremely less than
+0.05 indicate that there is significant effect of the various factors
+towards hatchability rates.
+
+\#\#\#Step 2: Calculating effect size (eta-squared) to identify primary
+factor.
+
+\begin{verbatim}
+## 
+## ===EFFECT SIZE (ETA-SQUARED/ PROPORTION OF VARIANCE)===
+\end{verbatim}
+
+\begin{verbatim}
+##                           Eta_Squared
+## temp_level                     0.5186
+## humidity_level                 0.1815
+## incubator_model                0.2655
+## temp_level:humidity_level      0.0211
+## Residuals                      0.0132
+\end{verbatim}
+
+NOTE: -Temperature levels account for the vast majority of total
+variance confirming it as the primary factor. -Humidity effect is
+suppressed by temperature as it account for minimal variance on
+hatchability rates.
+
+\#\#\#Step 3: Post-hoc analysis for individual incubator models(Tukey
+HSD).
+
+\begin{verbatim}
+## 
+## === POST-HOC TUKEY HSD (Incubator model differences)===
+\end{verbatim}
+
+\begin{verbatim}
+##   Tukey multiple comparisons of means
+##     95% family-wise confidence level
+## 
+## Fit: aov(formula = hatchability_rate ~ temp_level * humidity_level + incubator_model, data = incubator_data)
+## 
+## $incubator_model
+##             diff        lwr        upr   p adj
+## M2-M1  -4.158333  -5.643131  -2.673536 0.0e+00
+## M3-M1 -12.050000 -13.534798 -10.565202 0.0e+00
+## M4-M1   2.883333   1.398536   4.368131 3.4e-05
+## M3-M2  -7.891667  -9.376464  -6.406869 0.0e+00
+## M4-M2   7.041667   5.556869   8.526464 0.0e+00
+## M4-M3  14.933333  13.448536  16.418131 0.0e+00
+\end{verbatim}
+
+NOTE: Incubator model 1 and 4 show a significant difference in
+hatchability rates from the rest of the models(2\&3).
+
+\#\#\#Plot Diagnostics.
+
+\pandocbounded{\includegraphics[keepaspectratio]{Incubator_ANOVA-with-RCBD-design_files/figure-latex/unnamed-chunk-6-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Incubator_ANOVA-with-RCBD-design_files/figure-latex/unnamed-chunk-7-1.pdf}}
+
+\end{document}
